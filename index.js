@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
 /** ROUTES */
-// register route
+// register routes
 app.get("/", (req, res) => {
     res.render("register.ejs");
 });
@@ -27,14 +27,15 @@ app.get("/", (req, res) => {
 app.post("/register", async (req, res) => {
     try {
         const { username, password } = req.body;
-        const userExist = await db.query(
+        const userNameQuery = await db.query(
             "SELECT username FROM users WHERE username = $1",
             [username],
         );
+        const userExist = userNameQuery.rows.length > 0;
 
-        if (userExist.rows.length > 0) {
+        if (userExist) {
             let errMsg = "user already exists";
-            console.log(userExist.rows[0].username);
+            console.log(userNameQuery.rows[0].username);
             // res.render("register.ejs", { message: "user already exists" });
             res.redirect(`/register?errMsg=${encodeURIComponent(errMsg)}`);
         } else {
@@ -66,16 +67,40 @@ app.get("/home", (req, res) => {
 });
 
 // login route
-app.get("/login", (req, res) => {
-    res.render("login.ejs");
-});
-
-app.post("/login", (req, res) => {
-    // get username and password
-    // check if username and password match
+app.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
-    } catch (error) {}
+
+        const userQuery = await db.query(
+            "SELECT username, password FROM users WHERE username = $1",
+            [username],
+        );
+        // console.log(userQuery.rows);
+        const userExist = userQuery.rows.length > 0;
+
+        if (userExist) {
+            const dbUserData = userQuery.rows[0];
+
+            if (password === dbUserData.password) {
+                res.redirect(`/home?username=${encodeURIComponent(username)}`);
+            } else {
+                let errMsg = "incorrect password";
+                res.redirect(`/login?errMsg=${encodeURIComponent(errMsg)}`);
+            }
+        } else {
+            let errMsg = "user does not exist";
+            res.redirect(`/login?errMsg=${encodeURIComponent(errMsg)}`);
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+});
+
+app.get("/login", (req, res) => {
+    const errMsg = req.query.errMsg;
+
+    //res.render("login.ejs");
+    res.render("login.ejs", { message: errMsg });
 });
 
 app.listen(port, () => {
