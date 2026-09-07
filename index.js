@@ -18,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set("view engine", "ejs");
 
+/** ROUTES */
 // register route
 app.get("/", (req, res) => {
     res.render("register.ejs");
@@ -32,8 +33,10 @@ app.post("/register", async (req, res) => {
         );
 
         if (userExist.rows.length > 0) {
+            let errMsg = "user already exists";
             console.log(userExist.rows[0].username);
-            res.render("register.ejs", { message: "user already exists" });
+            // res.render("register.ejs", { message: "user already exists" });
+            res.redirect(`/register?errMsg=${encodeURIComponent(errMsg)}`);
         } else {
             const registerUser = await db.query(
                 "INSERT INTO users (username, password) VALUES ($1, $2)",
@@ -45,6 +48,13 @@ app.post("/register", async (req, res) => {
     } catch (error) {
         console.error(error.message);
     }
+});
+
+app.get("/register", (req, res) => {
+    const errMsg = req.query.errMsg;
+
+    // res.render("register.ejs");
+    res.render("register.ejs", { message: errMsg });
 });
 
 // home route
@@ -67,7 +77,6 @@ app.post("/login", (req, res) => {
         const { username, password } = req.body;
     } catch (error) {}
 });
-
 
 app.listen(port, () => {
     console.log(`server running on port ${port}`);
