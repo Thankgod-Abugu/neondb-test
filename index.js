@@ -49,6 +49,7 @@ app.post("/register", async (req, res) => {
         }
     } catch (error) {
         console.error(error.message);
+        res.status(500).send("Something went wrong. Please try again.");
     }
 });
 
@@ -94,6 +95,7 @@ app.post("/login", async (req, res) => {
         }
     } catch (error) {
         console.log(error.message);
+        res.status(500).send("Something went wrong. Please try again.");
     }
 });
 
