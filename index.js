@@ -2,15 +2,16 @@ import express from "express";
 import pg from "pg";
 import "dotenv/config";
 import bodyParser from "body-parser";
+import {attachDatabasePool} from "@vercel/functions"
 
 const app = express();
 const port = 3000;
 
 // connect db
-const db = new pg.Client({
+const db = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
 });
-db.connect();
+attachDatabasePool(db);
 
 // middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
