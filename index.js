@@ -1,18 +1,20 @@
 import express from "express";
-import pg from "pg";
+// import pg from "pg";
 import "dotenv/config";
 import bodyParser from "body-parser";
-import {attachDatabasePool} from "@vercel/functions"
+// import {attachDatabasePool} from "@vercel/functions";
+import registerRouter from "./routes/register.js";
+import loginRouter from "./routes/login.js"
 
 const app = express();
 const port = 3000;
 
 // connect db
-const db = new pg.Pool({
+/** const db = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
     connectionTimeoutMillis: 10000, // give up (with an error) after 10s instead of hanging
 });
-attachDatabasePool(db);
+attachDatabasePool(db); */
 
 // middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,12 +23,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
 /** ROUTES */
-// register routes
 app.get("/", (req, res) => {
     res.render("register.ejs");
 });
 
-app.post("/register", async (req, res) => {
+app.use("/register", registerRouter);
+app.use("/login", loginRouter);
+
+/** app.post("/register", async (req, res) => {
     try {
         const { username, password } = req.body;
         const userNameQuery = await db.query(
@@ -52,14 +56,13 @@ app.post("/register", async (req, res) => {
         console.error(error.message);
         res.status(500).send("Something went wrong. Please try again.");
     }
-});
+}); */
 
-app.get("/register", (req, res) => {
+/** app.get("/register", (req, res) => {
     const errMsg = req.query.errMsg;
 
-    // res.render("register.ejs");
     res.render("register.ejs", { message: errMsg });
-});
+}); */
 
 // home route
 app.get("/home", (req, res) => {
@@ -70,7 +73,7 @@ app.get("/home", (req, res) => {
 });
 
 // login route
-app.post("/login", async (req, res) => {
+/** app.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
@@ -98,14 +101,14 @@ app.post("/login", async (req, res) => {
         console.log(error.message);
         res.status(500).send("Something went wrong. Please try again.");
     }
-});
+}); */
 
-app.get("/login", (req, res) => {
+/** app.get("/login", (req, res) => {
     const errMsg = req.query.errMsg;
 
     //res.render("login.ejs");
     res.render("login.ejs", { message: errMsg });
-});
+}); */
 
 app.listen(port, () => {
     console.log(`server running on port ${port}`);
