@@ -12,10 +12,14 @@
   "type": "module",
   "dependencies": {
     "@vercel/functions": "^3.9.5",
+    "bcrypt": "^6.0.0",
     "body-parser": "^2.3.0",
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
     "pg": "^8.22.0"
+  },
+  "allowScripts": {
+    "bcrypt@6.0.0": true
   }
 }

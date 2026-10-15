@@ -1,7 +1,9 @@
 import express from "express";
 import db from "../database/db.js";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
+const saltRounds = 10; // change the hash to 12 in production for more security
 
 // GET /register
 router.get("/", (req, res) => {
@@ -17,17 +19,20 @@ router.post("/", async (req, res) => {
             "SELECT username FROM users WHERE username = $1",
             [username],
         );
+        // console.log(userNameQuery.rows);
         const userExist = userNameQuery.rows.length > 0;
 
         if (userExist) {
             const errMsg = "user already exists";
             res.redirect(`/register?errMsg=${encodeURIComponent(errMsg)}`);
         } else {
-            await db.query(
-                "INSERT INTO users (username, password) VALUES ($1, $2)",
-                [username, password],
-            );
-            res.redirect(`/home?username=${encodeURIComponent(username)}`);
+            bcrypt.hash(password, saltRounds, async function (err, hash) {
+                await db.query(
+                    "INSERT INTO users (username, password) VALUES ($1, $2)",
+                    [username, hash],
+                );
+                res.redirect(`/home?username=${encodeURIComponent(username)}`);
+            });
         }
     } catch (error) {
         console.error(error.message);

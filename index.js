@@ -1,11 +1,13 @@
 import express from "express";
 import "dotenv/config";
 import bodyParser from "body-parser";
+//import bcrypt from "bcrypt";
 import registerRouter from "./routes/register.js";
 import loginRouter from "./routes/login.js"
 
 const app = express();
 const port = 3000;
+//const saltRounds = 10;
 
 // middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
