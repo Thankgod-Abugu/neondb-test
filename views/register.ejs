@@ -12,7 +12,7 @@
     <form action="/register" method="post">
         <input type="text" name="username" id="username" placeholder="username" required />
         <input type="text" name="password" id="password" placeholder="password" required />
-        <input type="submit" value="submit">
+        <input id="submit-btn" type="submit" value="submit">
         <br>
         <% if(locals.message){ %>
             <h2>
@@ -20,6 +20,15 @@
             </h2>
             <% } %>
     </form>
+    <script>
+        // const button = document.getElementById("submit-btn");
+
+        // button.addEventListener("click", function () {
+        //     // Stop all future mouse clicks on this button
+        //     this.style.pointerEvents = 'none';
+
+        // });
+    </script>
 </body>
 
 </html>

@@ -1,16 +1,17 @@
 import express from "express";
-import db from "../database/db.js";
 import bcrypt from "bcrypt";
+import db from "../database/db.js";
 
 const router = express.Router();
-const saltRounds = 10; // change the hash to 12 in production for more security
+const saltRounds = 10; 
+// change the hash to 12 in production for more security
 
 // GET /register
 router.get("/", (req, res) => {
     const errMsg = req.query.errMsg;
     res.render("register.ejs", { message: errMsg });
 });
-
+ 
 // POST /register
 router.post("/", async (req, res) => {
     try {
@@ -20,7 +21,7 @@ router.post("/", async (req, res) => {
             [username],
         );
         // console.log(userNameQuery.rows);
-        const userExist = userNameQuery.rows.length > 0;
+        const userExist = userNameQuery.rows.length === 1;
 
         if (userExist) {
             const errMsg = "user already exists";
